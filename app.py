@@ -1,29 +1,22 @@
-
 import streamlit as st
 import pandas as pd
 import joblib
-import os
 import re
-from datetime import datetime
+import os
 
-project_path = "/content/drive/MyDrive/AI_Customer_Support_Ticket_Triage"
+# Load models from GitHub repository
+category_model = joblib.load("category_model.pkl")
+urgency_model = joblib.load("urgency_model.pkl")
+category_vectorizer = joblib.load("category_vectorizer.pkl")
+urgency_vectorizer = joblib.load("urgency_vectorizer.pkl")
 
-category_model = joblib.load(os.path.join(project_path, "category_model.pkl"))
-urgency_model = joblib.load(os.path.join(project_path, "urgency_model.pkl"))
-
-category_vectorizer = joblib.load(
-    os.path.join(project_path, "category_vectorizer.pkl")
-)
-
-urgency_vectorizer = joblib.load(
-    os.path.join(project_path, "urgency_vectorizer.pkl")
-)
 
 def clean_text(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", "", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
 
 queue_map = {
     "billing": "Billing Team",
@@ -32,168 +25,123 @@ queue_map = {
     "product": "Product Support Team"
 }
 
+
 st.set_page_config(
-    page_title="AI Customer Support Triage",
-    page_icon="🤖",
+    page_title="AI Customer Support Ticket Triage",
+    page_icon="🎫",
     layout="wide"
 )
 
-st.title("🤖 AI Customer Support Ticket Triage")
-st.write("AI-based ticket classification, urgency prediction and support routing.")
-
-st.divider()
-
-st.subheader("🎫 Enter Customer Ticket")
+st.title("🎫 AI Customer Support Ticket Triage")
+st.write("AI-based support ticket classification and urgency prediction.")
 
 ticket = st.text_area(
-    "Customer Ticket",
+    "Enter customer support ticket:",
     placeholder="Example: My payment failed during checkout"
 )
 
-if st.button("🔍 Analyze Ticket", use_container_width=True):
+if st.button("🔍 Analyze Ticket"):
 
-    if not ticket.strip():
-        st.warning("Please enter a customer ticket.")
-
+    if ticket.strip() == "":
+        st.warning("Please enter a support ticket.")
     else:
         cleaned = clean_text(ticket)
 
+        # Category prediction
         category_input = category_vectorizer.transform([cleaned])
         category = category_model.predict(category_input)[0]
-        category_confidence = max(
+        category_prob = max(
             category_model.predict_proba(category_input)[0]
         )
 
+        # Urgency prediction
         urgency_input = urgency_vectorizer.transform([cleaned])
         urgency = urgency_model.predict(urgency_input)[0]
-        urgency_confidence = max(
+        urgency_prob = max(
             urgency_model.predict_proba(urgency_input)[0]
         )
 
-        confidence = min(
-            category_confidence,
-            urgency_confidence
-        )
-
-        confidence_percent = confidence * 100
-
-        queue = queue_map.get(
-            category,
-            "General Support Team"
-        )
+        confidence = min(category_prob, urgency_prob)
 
         if confidence < 0.60:
-            status = "Human Review Required"
+            status = "⚠️ Human Review Required"
         else:
-            status = "Automatically Routed"
+            status = "✅ Automatically Routed"
 
-        st.divider()
-        st.subheader("📊 Prediction Result")
+        queue = queue_map.get(category, "General Support Team")
 
-        c1, c2, c3, c4 = st.columns(4)
+        st.subheader("Prediction Result")
 
-        c1.metric("Category", category.title())
-        c2.metric("Urgency", urgency.title())
-        c3.metric("Confidence", f"{confidence_percent:.2f}%")
-        c4.metric("Queue", queue)
+        col1, col2, col3, col4 = st.columns(4)
 
-        if confidence < 0.60:
-            st.warning("⚠️ Human Review Required")
-        else:
-            st.success("✅ Automatically Routed")
+        with col1:
+            st.metric("Category", category)
 
-        result = pd.DataFrame({
-            "Ticket": [ticket],
-            "Category": [category.title()],
-            "Urgency": [urgency.title()],
-            "Queue": [queue],
-            "Confidence": [f"{confidence_percent:.2f}%"],
-            "Status": [status]
-        })
+        with col2:
+            st.metric("Urgency", urgency)
 
-        st.subheader("📋 Current Prediction")
+        with col3:
+            st.metric("Queue", queue)
 
-        st.dataframe(
-            result,
-            use_container_width=True,
-            hide_index=True
-        )
+        with col4:
+            st.metric("Confidence", f"{confidence:.1%}")
 
-        history_file = os.path.join(
-            project_path,
-            "prediction_history.csv"
-        )
+        st.info(status)
 
-        history_data = pd.DataFrame({
-            "Time": [datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
-            "Ticket": [ticket],
-            "Category": [category.title()],
-            "Urgency": [urgency.title()],
-            "Queue": [queue],
-            "Confidence": [f"{confidence_percent:.2f}%"],
-            "Status": [status]
-        })
+        # Save prediction history
+        history_file = "prediction_history.csv"
+
+        new_row = pd.DataFrame([{
+            "Ticket": ticket,
+            "Category": category,
+            "Urgency": urgency,
+            "Queue": queue,
+            "Confidence": confidence,
+            "Status": status
+        }])
 
         if os.path.exists(history_file):
-            history_data.to_csv(
-                history_file,
-                mode="a",
-                header=False,
-                index=False
+            history = pd.read_csv(history_file)
+            history = pd.concat(
+                [history, new_row],
+                ignore_index=True
             )
         else:
-            history_data.to_csv(
-                history_file,
-                index=False
+            history = new_row
+
+        history.to_csv(history_file, index=False)
+
+st.divider()
+
+st.subheader("📊 Prediction History")
+
+if os.path.exists("prediction_history.csv"):
+    history = pd.read_csv("prediction_history.csv")
+    st.dataframe(history, use_container_width=True)
+
+    st.subheader("Dashboard Statistics")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Total Tickets", len(history))
+
+    with col2:
+        st.metric(
+            "High Urgency",
+            len(history[history["Urgency"] == "high"])
+        )
+
+    with col3:
+        st.metric(
+            "Human Review",
+            len(
+                history[
+                    history["Status"].str.contains("Human Review")
+                ]
             )
-
-        st.success("Prediction saved to history! ✅")
-
-st.divider()
-
-st.subheader("📚 Prediction History")
-
-history_file = os.path.join(
-    project_path,
-    "prediction_history.csv"
-)
-
-if os.path.exists(history_file):
-
-    history = pd.read_csv(history_file)
-
-    st.dataframe(
-        history,
-        use_container_width=True,
-        hide_index=True
-    )
-
-    st.subheader("📈 Dashboard Statistics")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric("Total Tickets", len(history))
-
-    c2.metric(
-        "Billing",
-        (history["Category"] == "Billing").sum()
-    )
-
-    c3.metric(
-        "Technical",
-        (history["Category"] == "Technical").sum()
-    )
-
-    c4.metric(
-        "Human Reviews",
-        (history["Status"] == "Human Review Required").sum()
-    )
-
+        )
 else:
-    st.info("No prediction history yet.")
+    st.write("No predictions yet.")
 
-st.divider()
-
-st.caption(
-    "AI Customer Support Ticket Triage | TF-IDF + Logistic Regression"
-)
+st.caption("AI Customer Support Ticket Triage — Prototype")
