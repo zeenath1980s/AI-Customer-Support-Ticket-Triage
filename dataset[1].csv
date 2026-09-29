@@ -1,0 +1,63 @@
+ticket,category,urgency,clean_ticket
+My payment failed,billing,high,my payment failed
+I was charged twice for my order,billing,high,i was charged twice for my order
+My card was charged but order is not confirmed,billing,high,my card was charged but order is not confirmed
+I cannot login to my account,account,medium,i cannot login to my account
+I forgot my password,account,medium,i forgot my password
+My account is locked,account,high,my account is locked
+The application keeps crashing,technical,high,the application keeps crashing
+The website is showing an error,technical,medium,the website is showing an error
+The app is very slow,technical,low,the app is very slow
+My product arrived damaged,product,high,my product arrived damaged
+I received the wrong product,product,medium,i received the wrong product
+The product I ordered is missing,product,high,the product i ordered is missing
+I was charged an extra amount,billing,medium,i was charged an extra amount
+My refund has not arrived,billing,medium,my refund has not arrived
+Payment failed during checkout,billing,high,payment failed during checkout
+I need help with my invoice,billing,low,i need help with my invoice
+The payment status is still pending,billing,medium,the payment status is still pending
+The app is not opening,technical,high,the app is not opening
+The website keeps showing an error,technical,medium,the website keeps showing an error
+The application freezes frequently,technical,medium,the application freezes frequently
+I am unable to upload a file,technical,high,i am unable to upload a file
+The website is very slow,technical,low,the website is very slow
+I cannot sign in,account,medium,i cannot sign in
+I forgot my account password,account,medium,i forgot my account password
+My account has been locked,account,high,my account has been locked
+I want to change my email address,account,low,i want to change my email address
+I cannot access my profile,account,medium,i cannot access my profile
+The product arrived broken,product,high,the product arrived broken
+I received the wrong item,product,medium,i received the wrong item
+My order is missing a product,product,high,my order is missing a product
+I want to replace my product,product,medium,i want to replace my product
+The product quality is not good,product,low,the product quality is not good
+I was charged twice,billing,high,i was charged twice
+My refund is urgent,billing,high,my refund is urgent
+My payment was deducted but the order failed,billing,high,my payment was deducted but the order failed
+I cannot access my account urgently,account,high,i cannot access my account urgently
+The app crashed during an important transaction,technical,high,the app crashed during an important transaction
+My account is locked and I need access,account,high,my account is locked and i need access
+My product delivery has a serious issue,product,high,my product delivery has a serious issue
+The website is completely unavailable,technical,high,the website is completely unavailable
+I need help with my order immediately,product,high,i need help with my order immediately
+My payment is stuck and I need assistance,billing,high,my payment is stuck and i need assistance
+Can you tell me more about the product features,product,low,can you tell me more about the product features
+I would like to know how the product works,product,low,i would like to know how the product works
+How can I update my notification settings,account,low,how can i update my notification settings
+Can you explain the available product options,product,low,can you explain the available product options
+I would like more information about my order,product,low,i would like more information about my order
+How can I view my previous orders,account,low,how can i view my previous orders
+Can you tell me about the available features,product,low,can you tell me about the available features
+I want to learn more about the product,product,low,i want to learn more about the product
+Where can I find my account settings,account,low,where can i find my account settings
+Can you explain how to use this feature,product,low,can you explain how to use this feature
+I need help with my payment,billing,medium,i need help with my payment
+My refund is taking longer than expected,billing,medium,my refund is taking longer than expected
+I am having trouble logging into my account,account,medium,i am having trouble logging into my account
+The application is running slowly,technical,medium,the application is running slowly
+I need help changing my account details,account,medium,i need help changing my account details
+My product delivery is delayed,product,medium,my product delivery is delayed
+The website is showing an error sometimes,technical,medium,the website is showing an error sometimes
+I need assistance with my invoice,billing,medium,i need assistance with my invoice
+I cannot update my profile information,account,medium,i cannot update my profile information
+I need help with a product issue,product,medium,i need help with a product issue
